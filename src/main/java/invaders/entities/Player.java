@@ -108,4 +108,13 @@ public class Player implements Moveable, Renderable {
         return "Player";
     }
 
+    @Override
+    public String getStrategy() {
+        return null;
+    }
+
+    @Override
+    public String getEnemyLevel(Renderable renderable) {
+        return null;
+    }
 }

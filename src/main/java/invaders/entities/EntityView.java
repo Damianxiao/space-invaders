@@ -13,4 +13,5 @@ public interface EntityView {
     Node getNode();
 
     boolean isMarkedForDelete();
+
 }

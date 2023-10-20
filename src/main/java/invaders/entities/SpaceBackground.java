@@ -14,6 +14,11 @@ public class SpaceBackground implements Renderable {
 	private Pane pane;
     private GameEngine model;
 
+	@Override
+	public String getStrategy() {
+		return null;
+	}
+
 	public SpaceBackground(GameEngine engine, Pane pane){
 		double width = pane.getWidth();
 		double height = pane.getHeight();
@@ -64,5 +69,10 @@ public class SpaceBackground implements Renderable {
 	@Override
 	public String getRenderableObjectName() {
 		return "background";
+	}
+
+	@Override
+	public String getEnemyLevel(Renderable renderable) {
+		return null;
 	}
 }

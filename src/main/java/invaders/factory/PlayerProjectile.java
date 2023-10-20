@@ -2,6 +2,7 @@ package invaders.factory;
 
 import invaders.engine.GameEngine;
 import invaders.physics.Vector2D;
+import invaders.rendering.Renderable;
 import invaders.strategy.ProjectileStrategy;
 import javafx.scene.image.Image;
 
@@ -25,5 +26,15 @@ public class PlayerProjectile extends Projectile {
     @Override
     public String getRenderableObjectName() {
         return "PlayerProjectile";
+    }
+
+    @Override
+    public String getStrategy() {
+        return null;
+    }
+
+    @Override
+    public String getEnemyLevel(Renderable renderable) {
+        return null;
     }
 }

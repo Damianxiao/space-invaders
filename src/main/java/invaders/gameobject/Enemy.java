@@ -1,18 +1,24 @@
 package invaders.gameobject;
 
+import com.sun.javafx.event.EventUtil;
 import invaders.engine.GameEngine;
+import invaders.event.ScoreEvent;
 import invaders.factory.EnemyProjectileFactory;
 import invaders.factory.Projectile;
 import invaders.factory.ProjectileFactory;
-import invaders.physics.Collider;
 import invaders.physics.Vector2D;
 import invaders.rendering.Renderable;
 import invaders.strategy.ProjectileStrategy;
+import javafx.event.Event;
 import javafx.scene.image.Image;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
+
+import static com.sun.javafx.event.EventUtil.fireEvent;
+
+
+
 
 public class Enemy implements GameObject, Renderable {
     private Vector2D position;
@@ -26,7 +32,10 @@ public class Enemy implements GameObject, Renderable {
     private ProjectileFactory projectileFactory;
     private Image projectileImage;
     private Random random = new Random();
-
+    /**
+     * @Description :
+     * score
+    */
     public Enemy(Vector2D position) {
         this.position = position;
         this.projectileFactory = new EnemyProjectileFactory();
@@ -63,6 +72,12 @@ public class Enemy implements GameObject, Renderable {
                     engine.getPendingToRemoveGameObject().add(p);
                     engine.getPendingToRemoveRenderable().add(p);
                     pendingToDeleteEnemyProjectile.add(p);
+                    /**
+                     * @Description :
+                     * set an event  will increase 1 point score
+                     * and trigger it and add a listener in GameWindow
+                    */
+
                 }
             }
             // clean
@@ -156,4 +171,18 @@ public class Enemy implements GameObject, Renderable {
         this.projectileStrategy = projectileStrategy;
     }
 
+    @Override
+    public String getStrategy() {
+        return null;
+    }
+
+    @Override
+    public String getEnemyLevel(Renderable renderable) {
+        if(renderable.getImage().getUrl().contains("slow")){
+            return "weak";
+        }else if(renderable.getImage().getUrl().contains("fast")){
+            return "strong";
+        }else
+        return null;
+    }
 }

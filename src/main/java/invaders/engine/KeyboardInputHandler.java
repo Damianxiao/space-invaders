@@ -45,6 +45,15 @@ class KeyboardInputHandler {
             }
         }
 
+        /**
+         * @Description :
+         * press BackSpace key to undo
+         */
+        if (keyEvent.getCode().equals(KeyCode.BACK_SPACE)) {
+            undoGame();
+        }
+
+
         if (keyEvent.getCode().equals(KeyCode.LEFT)) {
             left = true;
         }
@@ -59,6 +68,8 @@ class KeyboardInputHandler {
         if(right){
             model.rightPressed();
         }
+
+
     }
 
     void handleReleased(KeyEvent keyEvent) {

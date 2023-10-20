@@ -106,4 +106,14 @@ public class Bunker implements GameObject, Renderable {
     public void setState(BunkerState state) {
         this.state = state;
     }
+
+    @Override
+    public String getStrategy() {
+        return null;
+    }
+
+    @Override
+    public String getEnemyLevel(Renderable renderable) {
+        return null;
+    }
 }

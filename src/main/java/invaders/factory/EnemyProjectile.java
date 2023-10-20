@@ -3,6 +3,7 @@ package invaders.factory;
 import invaders.engine.GameEngine;
 import invaders.physics.Collider;
 import invaders.physics.Vector2D;
+import invaders.rendering.Renderable;
 import invaders.strategy.ProjectileStrategy;
 import javafx.scene.image.Image;
 
@@ -27,4 +28,15 @@ public class EnemyProjectile extends Projectile{
     public String getRenderableObjectName() {
         return "EnemyProjectile";
     }
+
+    @Override
+    public String getStrategy() {
+        return strategy.toString();
+    }
+
+    @Override
+    public String getEnemyLevel(Renderable renderable) {
+        return null;
+    }
+
 }

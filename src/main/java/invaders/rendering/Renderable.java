@@ -53,4 +53,16 @@ public interface Renderable {
     }
 
     public String getRenderableObjectName();
+
+    /**
+     * @Description :
+     * add a function to get every enetity's type, for  calculate  score
+    */
+    public String getStrategy();
+
+    /**
+     * @Description :
+     * give emeny a level
+    */
+    public String getEnemyLevel(Renderable renderable);
 }

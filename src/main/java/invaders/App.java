@@ -46,8 +46,11 @@ public class App extends Application {
         easyButton.setOnAction(event -> startGame(primaryStage, easy));
         mediumButton.setOnAction(event -> startGame(primaryStage, medium));
         hardButton.setOnAction(event -> startGame(primaryStage, hard));
+        Label title = new Label();
+        title.setStyle("-fx-font-size: 20px");
+        title.setText(" Choose Difficulty You Wanna Play:");
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(new Label(" Choose Difficulty You Wanna Play:"), easyButton, mediumButton, hardButton);
+        layout.getChildren().addAll(title, easyButton, mediumButton, hardButton);
         Scene startScene = new Scene(layout,800,800);
         primaryStage.setScene(startScene);
         primaryStage.show();
@@ -61,7 +64,6 @@ public class App extends Application {
         GameEngine model = new GameEngine(configFilePath);
         GameWindow window = new GameWindow(model);
         Scene gameScene = window.getScene();
-
         primaryStage.setScene(gameScene);
         window.run();
     }
@@ -75,14 +77,14 @@ public class App extends Application {
         button.setLayoutY(50);
         button.setPrefWidth(100);
         button.setPrefHeight(50);
-        button.setStyle(
-                "-fx-background-color:#00BFFF;"+
-                        "-fx-background-radius:20;"+
-                        "-fx-text-fill:#FF0000;"+
-                        "-fx-border-radius:20;"+
-                        "-fx-border-width:5;"+
-                        "-fx-border-insets:-5"
-        );
+        button.setStyle("-fx-font-size: 16px;\n" +
+                "    -fx-font-weight: bold;\n" +
+                "    -fx-text-fill: #ff0000;\n" +
+                "    -fx-background-color: #f0f0f0;\n" +
+                "    -fx-padding: 10px;\n" +
+                "    -fx-border-color: #000000;\n" +
+                "    -fx-border-width: 2px;\n" +
+                "    -fx-border-radius: 5px;\n" );
         return  button ;
     }
 }

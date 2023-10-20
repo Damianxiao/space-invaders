@@ -2,18 +2,25 @@ package invaders.engine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import invaders.ConfigReader;
 import invaders.builder.BunkerBuilder;
 import invaders.builder.Director;
 import invaders.builder.EnemyBuilder;
+import invaders.event.ScoreEvent;
 import invaders.factory.Projectile;
 import invaders.gameobject.Bunker;
 import invaders.gameobject.Enemy;
 import invaders.gameobject.GameObject;
 import invaders.entities.Player;
 import invaders.rendering.Renderable;
+import invaders.util.gameState;
+import invaders.util.gameUndo;
+import javafx.event.Event;
 import org.json.simple.JSONObject;
+
+import static invaders.engine.GameWindow.updateScore;
 
 /**
  * This class manages the main loop and logic of the game
@@ -78,6 +85,7 @@ public class GameEngine {
 	 * update every Frame
 	 */
 	public void update(){
+
 		timer+=1;
 
 		movePlayer();
@@ -92,6 +100,7 @@ public class GameEngine {
 			for (int j = i+1; j < renderables.size(); j++) {
 				Renderable renderableB = renderables.get(j);
 
+
 				if((renderableA.getRenderableObjectName().equals("Enemy") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))
 						||(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("Enemy"))||
 						(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))){
@@ -100,6 +109,14 @@ public class GameEngine {
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
 						renderableA.takeDamage(1);
 						renderableB.takeDamage(1);
+						/**
+						 * @Description :
+						 * calculate point
+						 */
+						if(!renderableA.getRenderableObjectName().equals("bunker")&&!renderableB.getRenderableObjectName().equals("bunker")){
+							updateScoreCount(renderableA);
+							updateScoreCount(renderableB);
+						}
 					}
 				}
 			}
@@ -201,4 +218,51 @@ public class GameEngine {
 	public Player getPlayer() {
 		return player;
 	}
+
+	/**
+	 * @Description :
+	 * calculate point
+	*/
+	public void updateScoreCount(Renderable renderable){
+		if(!renderable.isAlive()&&!renderable.getRenderableObjectName().equals("bunker")){
+
+			if(renderable.getRenderableObjectName().equals("Enemy") || renderable.getRenderableObjectName().equals("EnemyProjectile")){
+//			for test
+//			if(renderable.getRenderableObjectName().equals("Enemy")){
+				switch (renderable.getRenderableObjectName()){
+					case "EnemyProjectile":
+						if(renderable.getStrategy().contains("Fast")){
+							updateScore(2);break;
+						} else if (renderable.getStrategy().contains("Slow")) {
+							updateScore(1);break;
+						}
+						break;
+					case "Enemy" :
+						if(renderable.getEnemyLevel(renderable).equals("weak")){
+							updateScore(3);break;
+						} else if (renderable.getEnemyLevel(renderable).equals("strong")) {
+							updateScore(4);break;
+						}
+						break;
+				}
+			}
+		}
+	}
+	/**
+	 * @Description :
+	 * save game every seconds
+	 */
+
+	/**
+	 * @Description :
+	 *  undo set model
+	*/
+	public void setRenderables(List<Renderable> renderables){
+		this.renderables=renderables;
+	}
+	public void setGameObjects(List<GameObject> gameObjects){
+		this.gameObjects=gameObjects;
+	}
+
+
 }
