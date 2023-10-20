@@ -41,8 +41,8 @@ public class GameWindow {
      * set Timer Label
     */
     private  static  int gameTime=0;
-    private static Label timerTime = new Label("0");
-    private  Label timerTitle = new Label("Time:");
+    public static Label timerTime = new Label("0");
+    public  Label timerTitle = new Label("Time:");
 
     /**
      * @Description :
@@ -86,10 +86,7 @@ public class GameWindow {
         scene = new Scene(pane, width, height);
         this.background = new SpaceBackground(model, pane);
 
-
-
         KeyboardInputHandler keyboardInputHandler = new KeyboardInputHandler(this.model);
-
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
@@ -114,8 +111,8 @@ public class GameWindow {
           * @Description :
           * set a timeline for undo function
          */
-         Timeline saveTimeline = new Timeline(new KeyFrame(Duration.seconds(1),e -> saveCurrentGame()));
-        saveTimeline.setCycleCount(Timeline.INDEFINITE);
+         Timeline saveTimeline = new Timeline(new KeyFrame(Duration.seconds(1),e -> model.saveCurrentGame()));
+         saveTimeline.setCycleCount(Timeline.INDEFINITE);
          timerTimeline.play();
          saveTimeline.play();
          timeline.play();

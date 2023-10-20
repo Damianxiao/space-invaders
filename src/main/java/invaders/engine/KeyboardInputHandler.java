@@ -50,7 +50,7 @@ class KeyboardInputHandler {
          * press BackSpace key to undo
          */
         if (keyEvent.getCode().equals(KeyCode.BACK_SPACE)) {
-            undoGame();
+            model.undoGame();
         }
 
 

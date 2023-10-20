@@ -20,7 +20,7 @@ import invaders.util.gameUndo;
 import javafx.event.Event;
 import org.json.simple.JSONObject;
 
-import static invaders.engine.GameWindow.updateScore;
+import static invaders.engine.GameWindow.*;
 
 /**
  * This class manages the main loop and logic of the game
@@ -42,6 +42,14 @@ public class GameEngine {
 	private int gameWidth;
 	private int gameHeight;
 	private int timer = 45;
+	/**
+	 * @Description :
+	 * gameUndo function
+	 */
+
+	private static gameUndo gameUndo = new gameUndo();
+
+	private static gameState gameState;
 
 	//init engine
 	public GameEngine(String config){
@@ -113,9 +121,11 @@ public class GameEngine {
 						 * @Description :
 						 * calculate point
 						 */
-						if(!renderableA.getRenderableObjectName().equals("bunker")&&!renderableB.getRenderableObjectName().equals("bunker")){
-							updateScoreCount(renderableA);
-							updateScoreCount(renderableB);
+						if(!renderableA.getRenderableObjectName().equals("Bunker")&&!renderableB.getRenderableObjectName().equals("Bunker")){
+//							if(renderableA.getRenderableObjectName().equals("Player") || renderableB.getRenderableObjectName().equals("Player")){
+								updateScoreCount(renderableA);
+								updateScoreCount(renderableB);
+//							}
 						}
 					}
 				}
@@ -224,7 +234,7 @@ public class GameEngine {
 	 * calculate point
 	*/
 	public void updateScoreCount(Renderable renderable){
-		if(!renderable.isAlive()&&!renderable.getRenderableObjectName().equals("bunker")){
+		if(!renderable.isAlive()&&!renderable.getRenderableObjectName().equals("Bunker")){
 
 			if(renderable.getRenderableObjectName().equals("Enemy") || renderable.getRenderableObjectName().equals("EnemyProjectile")){
 //			for test
@@ -252,6 +262,31 @@ public class GameEngine {
 	 * @Description :
 	 * save game every seconds
 	 */
+	void saveCurrentGame() {
+		gameUndo = new gameUndo();
+		Stack<gameState> saves = new Stack<>();
+		int score = Integer.parseInt(scoreCount.getText());
+		int time = Integer.parseInt(timerTime.getText());
+		List<Renderable> renderables = getRenderables();
+		List<GameObject> gameObjects = getGameObjects();
+		gameState gameState = new gameState(score,time,renderables,gameObjects);
+		gameUndo.saveCurrentState(gameState);
+	}
+
+	/**
+	 * @Description :
+	 * Undo game
+	 */
+	public void undoGame(){
+		//get the gameState of last frame
+		gameState gameState = gameUndo.Undo();
+		if(gameState !=null){
+			scoreCount.setText(String.valueOf(gameState.getScore()));
+			timerTime.setText(String.valueOf(gameState.getTime()));
+			setRenderables(gameState.getRenderables());
+			setGameObjects(gameState.getGameObjects());
+		}
+	}
 
 	/**
 	 * @Description :
