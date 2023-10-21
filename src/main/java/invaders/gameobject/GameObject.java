@@ -8,4 +8,6 @@ public interface GameObject {
     public void start();
     public void update(GameEngine model);
 
+    public boolean isAlive();
+
 }

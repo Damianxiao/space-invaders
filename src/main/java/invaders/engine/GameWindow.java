@@ -28,9 +28,9 @@ public class GameWindow {
 	private final int width;
     private final int height;
 	private Scene scene;
-    private Pane pane;
-    private GameEngine model;
-    private List<EntityView> entityViews =  new ArrayList<EntityView>();
+    private static Pane pane;
+    private static  GameEngine model;
+    private static List<EntityView> entityViews =  new ArrayList<EntityView>();
     private Renderable background;
 
     private double xViewportOffset = 0.0;
@@ -57,9 +57,9 @@ public class GameWindow {
      * gameUndo function
     */
 
-    private static gameUndo gameUndo;
+    private static gameUndo gameUndo = new gameUndo();
 
-    private static gameState gameState;
+    private static gameState gameState ;
 
 	public GameWindow(GameEngine model){
         this.model = model;
@@ -95,12 +95,14 @@ public class GameWindow {
 
 
     public void run() {
+
         /**
          * @Description :
-         * set a timeline for undo function
-         */
-//        Timeline saveTimeline = new Timeline(new KeyFrame(Duration.seconds(1),e -> model.saveCurrentGame()));
-//        saveTimeline.setCycleCount(Timeline.INDEFINITE);
+         * undo game
+        */
+        Timeline undoTimeline = new Timeline(new KeyFrame(Duration.seconds(1), t -> model.saveCurrentGame()));
+        undoTimeline.setCycleCount(Timeline.INDEFINITE);
+        undoTimeline.play();
         //1ms for a frame, every frame do a draw()
          Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> this.draw()));
          //setTimeline Cycle  infinity
@@ -114,30 +116,15 @@ public class GameWindow {
          timerTimeline.setCycleCount(Timeline.INDEFINITE);
 
          timerTimeline.play();
-//         saveTimeline.play();
-         timeline.play();
-    }
 
-    /**
-     * @Description :
-     * save game every seconds
-    */
-    private void saveCurrentGame() {
-        gameUndo = new gameUndo();
-        Stack<gameState> saves = new Stack<>();
-        int score = Integer.parseInt(scoreCount.getText());
-        int time = Integer.parseInt(timerTime.getText());
-        List<Renderable> renderables = model.getRenderables();
-        List<GameObject> gameObjects = model.getGameObjects();
-        gameState gameState = new gameState(score,time,renderables,gameObjects);
-        gameUndo.saveCurrentState(gameState);
+         timeline.play();
     }
 
     /**
      * @Description :
      * Undo game
     */
-    public void undoGame(){
+    public static  void undoGame(){
         //get the gameState of last frame
         gameState gameState = gameUndo.Undo();
         if(gameState !=null){
@@ -151,7 +138,7 @@ public class GameWindow {
     private void draw(){
         // everyTime call Draw , do update once
         model.update();
-
+//        model.saveCurrentGame();
         List<Renderable> renderables = model.getRenderables();
         //if matches any entity update  each object  view
         for (Renderable entity : renderables) {
@@ -164,6 +151,7 @@ public class GameWindow {
                     break;
                 }
             }
+
             // if have no object(entity) create it
             if (notFound) {
                 EntityView entityView = new EntityViewImpl(entity);
@@ -179,10 +167,8 @@ public class GameWindow {
                     if (entityView.matchesEntity(entity)){
                         // MARKED  but not  delete instantly, will be deleted at  below
                         entityView.markForDelete();
-
                     }
                 }
-
             }
         }
 
@@ -240,6 +226,7 @@ public class GameWindow {
      * update score
     */
     public static  void updateScore(int scoreChange) {
+        model.saveCurrentGame();
         score += scoreChange;
         scoreCount.setText(String.valueOf(score));
     }
@@ -252,5 +239,27 @@ public class GameWindow {
         gameTime=time;
 //        score=0;
     }
+
+    /**
+     * @Description :
+     *  update entityview
+    */
+    public static void updatePane(EntityView entityView){
+        pane.getChildren().add(entityView.getNode());
+    }
+
+    public static void updateEntity(List<Renderable> renderableList,List<GameObject> gameObjectList){
+        /**
+         * @Description :
+         * clean original object
+        */
+            // entity dead,find match view and  delete
+         for (EntityView entityView : entityViews){
+                 entityView.markForDelete();
+         }
+        model.setRenderables(renderableList);
+        model.setGameObjects(gameObjectList);
+    }
+
 
 }

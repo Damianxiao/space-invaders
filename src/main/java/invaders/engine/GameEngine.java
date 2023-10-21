@@ -8,6 +8,8 @@ import invaders.ConfigReader;
 import invaders.builder.BunkerBuilder;
 import invaders.builder.Director;
 import invaders.builder.EnemyBuilder;
+import invaders.entities.EntityView;
+import invaders.entities.EntityViewImpl;
 import invaders.event.ScoreEvent;
 import invaders.factory.Projectile;
 import invaders.gameobject.Bunker;
@@ -46,16 +48,20 @@ public class GameEngine {
 	 * @Description :
 	 * gameUndo function
 	 */
+	private List<EntityView> entityViews =  new ArrayList<EntityView>();
+	private double xViewportOffset = 0.0;
+	private double yViewportOffset = 0.0;
 
-	private static gameUndo gameUndo = new gameUndo();
+	private  gameUndo gameUndo;
 
 	Stack<gameState> saves = new Stack<>();
 
-	private static gameState gameState;
+	private  gameState gameState;
 
 	//init engine
 	public GameEngine(String config){
 		// Read the config here
+		gameUndo = new gameUndo();
 		ConfigReader.parse(config);
 
 		// Get game width and height
@@ -244,7 +250,7 @@ public class GameEngine {
 				switch (renderable.getRenderableObjectName()){
 					case "EnemyProjectile":
 						if(renderable.getStrategy().contains("Fast")){
-							updateScore(2);break;
+							updateScore(2); break;
 						} else if (renderable.getStrategy().contains("Slow")) {
 							updateScore(1);break;
 						}
@@ -265,12 +271,13 @@ public class GameEngine {
 	 * save game every seconds
 	 */
 	void saveCurrentGame() {
+
 		int score = Integer.parseInt(scoreCount.getText());
 		int time = Integer.parseInt(timerTime.getText());
 		List<Renderable> renderables = getRenderables();
 		List<GameObject> gameObjects = getGameObjects();
-		gameState gameState = new gameState(score,time,renderables,gameObjects);
-		gameUndo.saveCurrentState(gameState);
+		gameState gs = new gameState(score, time, renderables, gameObjects);
+		gameUndo.saveCurrentState(gs);
 	}
 
 	/**
@@ -279,13 +286,20 @@ public class GameEngine {
 	 */
 	public void undoGame(){
 		//get the gameState of last frame
-		gameState gameState = gameUndo.Undo();
-		if(gameState !=null){
-			resetStatic(Integer.parseInt(String.valueOf(gameState.getTime())));
-			scoreCount.setText(String.valueOf(gameState.getScore()));
-			timerTime.setText(String.valueOf(gameState.getTime()));
-			setRenderables(gameState.getRenderables());
-			setGameObjects(gameState.getGameObjects());
+		gameState gs = gameUndo.Undo();
+		if(gs !=null){
+			List<Renderable> renderableList = gs.getRenderables();
+			List<GameObject> gameObjects = gs.getGameObjects();
+			setRenderables(renderableList);
+			setGameObjects(gameObjects);
+			resetStatic(Integer.parseInt(String.valueOf(gs.getTime())));
+			scoreCount.setText(String.valueOf(gs.getScore()));
+			timerTime.setText(String.valueOf(gs.getTime()));
+			// update EntityView location
+			updateEntity(renderableList,gameObjects);
+			System.out.println("SLSLSLSLSLSLSLSLS");
+		}else{
+			System.out.println("none save");
 		}
 	}
 
