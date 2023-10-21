@@ -12,6 +12,7 @@ import invaders.strategy.ProjectileStrategy;
 import javafx.event.Event;
 import javafx.scene.image.Image;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,7 +21,7 @@ import static com.sun.javafx.event.EventUtil.fireEvent;
 
 
 
-public class Enemy implements GameObject, Renderable {
+public class Enemy implements GameObject, Renderable, Serializable {
     private Vector2D position;
     private int lives = 1;
     private Image image;
@@ -32,6 +33,20 @@ public class Enemy implements GameObject, Renderable {
     private ProjectileFactory projectileFactory;
     private Image projectileImage;
     private Random random = new Random();
+
+    public Enemy(Vector2D position, int lives, Image image, int xVel, ArrayList<Projectile> enemyProjectile, ArrayList<Projectile> pendingToDeleteEnemyProjectile, ProjectileStrategy projectileStrategy, ProjectileFactory projectileFactory, Image projectileImage, Random random) {
+        this.position = position;
+        this.lives = lives;
+        this.image = image;
+        this.xVel = xVel;
+        this.enemyProjectile = enemyProjectile;
+        this.pendingToDeleteEnemyProjectile = pendingToDeleteEnemyProjectile;
+        this.projectileStrategy = projectileStrategy;
+        this.projectileFactory = projectileFactory;
+        this.projectileImage = projectileImage;
+        this.random = random;
+    }
+
     /**
      * @Description :
      * score
@@ -185,4 +200,13 @@ public class Enemy implements GameObject, Renderable {
         }else
         return null;
     }
+
+    @Override
+    public int getLives() {
+        return this.lives;
+    }
+    public int getxVel(){
+        return this.xVel;
+    }
+
 }

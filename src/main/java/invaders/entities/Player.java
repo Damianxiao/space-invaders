@@ -15,8 +15,9 @@ import javafx.scene.image.Image;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class Player implements Moveable, Renderable {
+public class Player implements Moveable, Renderable, Serializable {
 
     private final Vector2D position;
     private double health;
@@ -27,6 +28,14 @@ public class Player implements Moveable, Renderable {
     private final Image image;
     private ProjectileFactory playerProjectileFactory = new PlayerProjectileFactory();
 
+
+    public Player(Vector2D position, double health, double velocity, Image image, ProjectileFactory playerProjectileFactory) {
+        this.position = position;
+        this.health = health;
+        this.velocity = velocity;
+        this.image = image;
+        this.playerProjectileFactory = playerProjectileFactory;
+    }
 
     public Player(JSONObject playerInfo){
         int x = ((Long)((JSONObject)(playerInfo.get("position"))).get("x")).intValue();
@@ -52,6 +61,11 @@ public class Player implements Moveable, Renderable {
     @Override
     public boolean isAlive() {
         return this.health > 0;
+    }
+
+    @Override
+    public int getLives() {
+        return 0;
     }
 
     @Override

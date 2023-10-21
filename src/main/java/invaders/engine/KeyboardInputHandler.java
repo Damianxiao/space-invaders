@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static invaders.engine.GameWindow.undoGame;
 
 class KeyboardInputHandler {
     private final GameEngine model;
@@ -53,7 +52,6 @@ class KeyboardInputHandler {
          */
         if (keyEvent.getCode().equals(KeyCode.BACK_SPACE)) {
             model.undoGame();
-//            undoGame();
         }
 
 

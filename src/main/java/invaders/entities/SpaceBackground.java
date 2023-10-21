@@ -9,7 +9,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
-public class SpaceBackground implements Renderable {
+import java.io.Serializable;
+
+public class SpaceBackground implements Renderable, Serializable {
 	private Rectangle space;
 	private Pane pane;
     private GameEngine model;

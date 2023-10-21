@@ -11,6 +11,7 @@ import invaders.builder.EnemyBuilder;
 import invaders.entities.EntityView;
 import invaders.entities.EntityViewImpl;
 import invaders.event.ScoreEvent;
+import invaders.factory.PlayerProjectileFactory;
 import invaders.factory.Projectile;
 import invaders.gameobject.Bunker;
 import invaders.gameobject.Enemy;
@@ -21,6 +22,8 @@ import invaders.util.gameState;
 import invaders.util.gameUndo;
 import javafx.event.Event;
 import org.json.simple.JSONObject;
+
+import javax.swing.text.Position;
 
 import static invaders.engine.GameWindow.*;
 
@@ -53,6 +56,7 @@ public class GameEngine {
 	private double yViewportOffset = 0.0;
 
 	private  gameUndo gameUndo;
+
 
 	Stack<gameState> saves = new Stack<>();
 
@@ -274,10 +278,31 @@ public class GameEngine {
 
 		int score = Integer.parseInt(scoreCount.getText());
 		int time = Integer.parseInt(timerTime.getText());
-		List<Renderable> renderables = getRenderables();
-		List<GameObject> gameObjects = getGameObjects();
-		gameState gs = new gameState(score, time, renderables, gameObjects);
-		gameUndo.saveCurrentState(gs);
+
+		// some weird problem
+		List<Renderable> renderablesCopy = new ArrayList<>();
+		for(Renderable renderable:getRenderables()){
+			if(renderable.getRenderableObjectName().equals("Player")){
+				Player playerEntity = new Player(renderable.getPosition(),renderable.getHealth(),1,renderable.getImage(),new PlayerProjectileFactory());
+				renderablesCopy.add(playerEntity);
+			} else if (renderable.getRenderableObjectName().equals("Bunker")) {
+				Bunker bunkerEntity = new Bunker(renderable.getPosition(),renderable.getWidth(),renderable.getHeight(),renderable.getLives(),renderable.getImage(),((Bunker)renderable).getState());
+				renderablesCopy.add(bunkerEntity);
+			} else if (renderable.getRenderableObjectName().equals("Enemy")) {
+				Enemy enemyEntity = new Enemy(renderable.getPosition(),renderable.getLives(),renderable.getImage(),-1,renderable.get);
+			}
+		}
+		List<GameObject> gameObjectsCopy = new ArrayList<>(getGameObjects());
+		/* *
+		 * @Description
+		 *  cannot use this way , copy  its own object list but not the reference
+		*/
+//		List<Renderable> renderables = getRenderables();
+//		List<GameObject> gameObjects = getGameObjects();
+		System.out.println(renderables.size()+"======="+gameObjects.size());
+		gameState gs = new gameState(score, time, renderablesCopy, gameObjectsCopy);
+		saves.push(gs);
+		gameUndo.setSaves(saves);
 	}
 
 	/**
@@ -285,21 +310,22 @@ public class GameEngine {
 	 * Undo game
 	 */
 	public void undoGame(){
-		//get the gameState of last frame
 		gameState gs = gameUndo.Undo();
-		if(gs !=null){
-			List<Renderable> renderableList = gs.getRenderables();
-			List<GameObject> gameObjects = gs.getGameObjects();
-			setRenderables(renderableList);
-			setGameObjects(gameObjects);
-			resetStatic(Integer.parseInt(String.valueOf(gs.getTime())));
-			scoreCount.setText(String.valueOf(gs.getScore()));
-			timerTime.setText(String.valueOf(gs.getTime()));
-			// update EntityView location
-			updateEntity(renderableList,gameObjects);
-			System.out.println("SLSLSLSLSLSLSLSLS");
-		}else{
-			System.out.println("none save");
+		if(gs!=null){
+
+		// Create new lists for renderables and gameObjects
+		List<Renderable> renderableList = new ArrayList<>(gs.getRenderables());
+		List<GameObject> gameObjectsList = new ArrayList<>(gs.getGameObjects());
+		// Set the new lists as the current game state
+		setRenderables(renderableList);
+		setGameObjects(gameObjectsList);
+		// Reset other game state variables
+		resetStatic(Integer.parseInt(String.valueOf(gs.getTime())));
+		scoreCount.setText(String.valueOf(gs.getScore()));
+		timerTime.setText(String.valueOf(gs.getTime()));
+		updatePane(renderableList);
+		// Update EntityView location
+//		updateEntity(renderableList, gameObjects);
 		}
 	}
 
@@ -313,6 +339,11 @@ public class GameEngine {
 	public void setGameObjects(List<GameObject> gameObjects){
 		this.gameObjects=gameObjects;
 	}
+
+	/* *
+	 * @Description
+	 *  deepCopy
+	*/
 
 
 }

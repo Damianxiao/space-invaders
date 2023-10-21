@@ -6,7 +6,9 @@ import invaders.physics.Vector2D;
 import invaders.rendering.Renderable;
 import javafx.scene.image.Image;
 
-public abstract class Projectile implements Renderable, GameObject {
+import java.io.Serializable;
+
+public abstract class Projectile implements Renderable, GameObject, Serializable {
     private int lives = 1;
     private Vector2D position;
     private final Image image;

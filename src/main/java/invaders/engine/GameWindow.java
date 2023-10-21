@@ -33,8 +33,8 @@ public class GameWindow {
     private static List<EntityView> entityViews =  new ArrayList<EntityView>();
     private Renderable background;
 
-    private double xViewportOffset = 0.0;
-    private double yViewportOffset = 0.0;
+    private static double xViewportOffset = 0.0;
+    private static double yViewportOffset = 0.0;
     // private static final double VIEWPORT_MARGIN = 280.0;
     /**
      * @Description :
@@ -100,7 +100,7 @@ public class GameWindow {
          * @Description :
          * undo game
         */
-        Timeline undoTimeline = new Timeline(new KeyFrame(Duration.seconds(1), t -> model.saveCurrentGame()));
+        Timeline undoTimeline = new Timeline(new KeyFrame(Duration.seconds(3), t -> model.saveCurrentGame()));
         undoTimeline.setCycleCount(Timeline.INDEFINITE);
         undoTimeline.play();
         //1ms for a frame, every frame do a draw()
@@ -124,21 +124,14 @@ public class GameWindow {
      * @Description :
      * Undo game
     */
-    public static  void undoGame(){
-        //get the gameState of last frame
-        gameState gameState = gameUndo.Undo();
-        if(gameState !=null){
-            scoreCount.setText(String.valueOf(gameState.getScore()));
-            timerTime.setText(String.valueOf(gameState.getTime()));
-            model.setRenderables(gameState.getRenderables());
-            model.setGameObjects(gameState.getGameObjects());
-        }
-    }
 
     private void draw(){
         // everyTime call Draw , do update once
-        model.update();
-//        model.saveCurrentGame();
+        model.update(); // logic layer
+        /* *
+         * @Description
+         *  view layer
+        */
         List<Renderable> renderables = model.getRenderables();
         //if matches any entity update  each object  view
         for (Renderable entity : renderables) {
@@ -151,7 +144,6 @@ public class GameWindow {
                     break;
                 }
             }
-
             // if have no object(entity) create it
             if (notFound) {
                 EntityView entityView = new EntityViewImpl(entity);
@@ -244,8 +236,32 @@ public class GameWindow {
      * @Description :
      *  update entityview
     */
-    public static void updatePane(EntityView entityView){
-        pane.getChildren().add(entityView.getNode());
+    public static void updatePane(List<Renderable> renderableList){
+        entityViews.clear();
+        for (Renderable entity : renderableList) {
+            boolean notFound = true;
+            for (EntityView view : entityViews) {
+                if (view.matchesEntity(entity)) {
+                    notFound = false;
+                    for (Renderable r : renderableList) {
+                        EntityView e = new EntityViewImpl(r);
+                        entityViews.add(e);
+                        pane.getChildren().add(e.getNode());
+                    }
+                    // update object position
+                    view.update(xViewportOffset, yViewportOffset);
+                    break;
+                }
+            }
+
+            // if have no object(entity) create it
+            if (notFound) {
+                EntityView entityView = new EntityViewImpl(entity);
+                entityViews.add(entityView);
+                pane.getChildren().add(entityView.getNode());
+            }
+        }
+
     }
 
     public static void updateEntity(List<Renderable> renderableList,List<GameObject> gameObjectList){
@@ -254,11 +270,26 @@ public class GameWindow {
          * clean original object
         */
             // entity dead,find match view and  delete
-         for (EntityView entityView : entityViews){
-                 entityView.markForDelete();
-         }
-        model.setRenderables(renderableList);
-        model.setGameObjects(gameObjectList);
+        for (Renderable entity : renderableList) {
+            boolean notFound = true;
+            for (EntityView view : entityViews) {
+                if (view.matchesEntity(entity)) {
+                    notFound = false;
+//                    updatePane(view);
+                    // update object position
+                    view.update(xViewportOffset, yViewportOffset);
+                    break;
+                }
+            }
+
+            // if have no object(entity) create it
+            if (notFound) {
+                EntityView entityView = new EntityViewImpl(entity);
+                entityViews.add(entityView);
+                pane.getChildren().add(entityView.getNode());
+            }
+        }
+
     }
 
 

@@ -4,10 +4,12 @@ import invaders.physics.Collider;
 import invaders.physics.Vector2D;
 import javafx.scene.image.Image;
 
+import java.io.Serializable;
+
 /**
  * Represents something that can be rendered : enemy  player
  */
-public interface Renderable {
+public interface Renderable extends Serializable  {
 
     public Image getImage();
 
@@ -65,4 +67,11 @@ public interface Renderable {
      * give emeny a level
     */
     public String getEnemyLevel(Renderable renderable);
+
+    /* *
+     * @Description
+     * deepCopy
+    */
+    public int getLives();
+
 }

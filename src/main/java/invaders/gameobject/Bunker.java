@@ -1,14 +1,15 @@
 package invaders.gameobject;
 
 import invaders.engine.GameEngine;
-import invaders.physics.Collider;
 import invaders.physics.Vector2D;
 import invaders.rendering.Renderable;
 import invaders.state.BunkerState;
 import invaders.state.GreenState;
 import javafx.scene.image.Image;
 
-public class Bunker implements GameObject, Renderable {
+import java.io.Serializable;
+
+public class Bunker implements GameObject, Renderable , Serializable {
     private Vector2D position;
     private double width;
     private double height;
@@ -16,6 +17,14 @@ public class Bunker implements GameObject, Renderable {
     private Image image;
     private BunkerState state = new GreenState(this);
 
+    public Bunker(Vector2D position, double width, double height, int lives, Image image, BunkerState state) {
+        this.position = position;
+        this.width = width;
+        this.height = height;
+        this.lives = lives;
+        this.image = image;
+        this.state = state;
+    }
 
     @Override
     public void start() {}
@@ -74,7 +83,7 @@ public class Bunker implements GameObject, Renderable {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(double width) {
         this.width = width;
     }
 
@@ -83,7 +92,7 @@ public class Bunker implements GameObject, Renderable {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(double height) {
         this.height = height;
     }
 
@@ -116,4 +125,6 @@ public class Bunker implements GameObject, Renderable {
     public String getEnemyLevel(Renderable renderable) {
         return null;
     }
+
+
 }
