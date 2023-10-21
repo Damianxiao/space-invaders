@@ -26,4 +26,12 @@ public class gameUndo {
     public void saveCurrentState(gameState state){
         saves.push(state);
     }
+
+    public Stack<gameState> getSaves() {
+        return saves;
+    }
+
+    public void setSaves(Stack<gameState> saves) {
+        this.saves = saves;
+    }
 }

@@ -95,7 +95,12 @@ public class GameWindow {
 
 
     public void run() {
-
+        /**
+         * @Description :
+         * set a timeline for undo function
+         */
+//        Timeline saveTimeline = new Timeline(new KeyFrame(Duration.seconds(1),e -> model.saveCurrentGame()));
+//        saveTimeline.setCycleCount(Timeline.INDEFINITE);
         //1ms for a frame, every frame do a draw()
          Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> this.draw()));
          //setTimeline Cycle  infinity
@@ -107,14 +112,9 @@ public class GameWindow {
          */
          Timeline  timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1),e -> updateTimer()));
          timerTimeline.setCycleCount(Timeline.INDEFINITE);
-         /**
-          * @Description :
-          * set a timeline for undo function
-         */
-         Timeline saveTimeline = new Timeline(new KeyFrame(Duration.seconds(1),e -> model.saveCurrentGame()));
-         saveTimeline.setCycleCount(Timeline.INDEFINITE);
+
          timerTimeline.play();
-         saveTimeline.play();
+//         saveTimeline.play();
          timeline.play();
     }
 
@@ -159,7 +159,7 @@ public class GameWindow {
             for (EntityView view : entityViews) {
                 if (view.matchesEntity(entity)) {
                     notFound = false;
-                    // generate
+                    // update object position
                     view.update(xViewportOffset, yViewportOffset);
                     break;
                 }
@@ -242,6 +242,15 @@ public class GameWindow {
     public static  void updateScore(int scoreChange) {
         score += scoreChange;
         scoreCount.setText(String.valueOf(score));
+    }
+
+    /* *
+     * @Description
+     * set static variable to zero
+    */
+    public static void resetStatic(int time){
+        gameTime=time;
+//        score=0;
     }
 
 }

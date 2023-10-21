@@ -49,6 +49,8 @@ public class GameEngine {
 
 	private static gameUndo gameUndo = new gameUndo();
 
+	Stack<gameState> saves = new Stack<>();
+
 	private static gameState gameState;
 
 	//init engine
@@ -263,8 +265,6 @@ public class GameEngine {
 	 * save game every seconds
 	 */
 	void saveCurrentGame() {
-		gameUndo = new gameUndo();
-		Stack<gameState> saves = new Stack<>();
 		int score = Integer.parseInt(scoreCount.getText());
 		int time = Integer.parseInt(timerTime.getText());
 		List<Renderable> renderables = getRenderables();
@@ -281,6 +281,7 @@ public class GameEngine {
 		//get the gameState of last frame
 		gameState gameState = gameUndo.Undo();
 		if(gameState !=null){
+			resetStatic(Integer.parseInt(String.valueOf(gameState.getTime())));
 			scoreCount.setText(String.valueOf(gameState.getScore()));
 			timerTime.setText(String.valueOf(gameState.getTime()));
 			setRenderables(gameState.getRenderables());
