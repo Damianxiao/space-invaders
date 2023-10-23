@@ -33,6 +33,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import invaders.util.styleModify;
+import invaders.cheat.Cheat;
+
+import static invaders.cheat.Cheat.*;
 
 public class GameWindow {
 	private final int width;
@@ -83,10 +87,10 @@ public class GameWindow {
         this.height = model.getGameHeight();
 
         //label style
-        timerTitle = setLabel(timerTitle);
-        timerTime = setLabel(timerTime);
-        scoreCount = setLabel(scoreCount);
-        scoreTitle = setLabel(scoreTitle);
+        timerTitle = styleModify.setLabel(timerTitle);
+        timerTime = styleModify.setLabel(timerTime);
+        scoreCount = styleModify.setLabel(scoreCount);
+        scoreTitle = styleModify.setLabel(scoreTitle);
         HBox box = new HBox();
         box.setSpacing(5);
         box.setPadding(new Insets(10,10,10,10));
@@ -121,15 +125,6 @@ public class GameWindow {
 
 
     public void run() {
-
-        /**
-         * @Description :
-         * save game
-        */
-//        Timeline undoTimeline = new Timeline(new KeyFrame(Duration.seconds(5), t -> model.saveCurrentGame()));
-//        undoTimeline.setCycleCount(Timeline.INDEFINITE);
-//        undoTimeline.play();
-        //1ms for a frame, every frame do a draw()
          Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> this.draw()));
          //setTimeline Cycle  infinity
          timeline.setCycleCount(Timeline.INDEFINITE);
@@ -140,7 +135,6 @@ public class GameWindow {
          */
          Timeline  timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1),e -> updateTimer()));
          timerTimeline.setCycleCount(Timeline.INDEFINITE);
-
          timerTimeline.play();
 
          timeline.play();
@@ -195,8 +189,6 @@ public class GameWindow {
                 pane.getChildren().remove(entityView.getNode());
             }
         }
-
-
         model.getGameObjects().removeAll(model.getPendingToRemoveGameObject());
         model.getGameObjects().addAll(model.getPendingToAddGameObject());
         model.getRenderables().removeAll(model.getPendingToRemoveRenderable());
@@ -214,22 +206,7 @@ public class GameWindow {
 	public Scene getScene() {
         return scene;
     }
-    /**
-     * @Description :
-     * set Label Style
-    */
-    public Label setLabel(Label label){
-        label.setFont(javafx.scene.text.Font.font(30));
-        label.setStyle("-fx-font-size: 16px;\n" +
-                "    -fx-font-weight: bold;\n" +
-                "    -fx-text-fill: #ff0000;\n" +
-                "    -fx-background-color: #f0f0f0;\n" +
-                "    -fx-padding: 10px;\n" +
-                "    -fx-border-color: #000000;\n" +
-                "    -fx-border-width: 2px;\n" +
-                "    -fx-border-radius: 5px;\n" );
-        return label;
-    }
+
 
     /**
      * @Description :
@@ -294,21 +271,9 @@ public class GameWindow {
         } else {
             cheatModeLabel.setText("cheatMode Off!");
         }
-
-        // cheatlabel fade in
-        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), cheatModeLabel);
-        fadeIn.setFromValue(0.0);
-        fadeIn.setToValue(1.0);
-
-        // cheatlabel fade out
-        FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), cheatModeLabel);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-        fadeOut.setDelay(Duration.seconds(2));
-
-        SequentialTransition sequence = new SequentialTransition(fadeIn, fadeOut);
+        List<FadeTransition> list =styleModify.initAnimation(cheatModeLabel);
+        SequentialTransition sequence = new SequentialTransition(list.get(0), list.get(1));
         sequence.setOnFinished(event -> cheatModeLabel.setText(""));
-
         sequence.play();
     }
     /* *
@@ -316,149 +281,32 @@ public class GameWindow {
      *  cheat selection
     */
     public static  void cheatModeSelection(String key){
+        ArrayList<List<Projectile>> list1 = new ArrayList<List<Projectile>>();
+        ArrayList<List<Projectile>> list2 = new ArrayList<List<Projectile>>();
+        ArrayList<List<Enemy>> list3 = new ArrayList<List<Enemy>>();
+        ArrayList<List<Enemy>> list4 = new ArrayList<List<Enemy>>();
         switch (key){
             case "J":
-                List<Projectile> fastProjectilesToRemove = new ArrayList<>();
-                List<Projectile> fastProjectilesRenderablesToRemove = new ArrayList<>();
-                for (GameObject gameObject : model.getGameObjects()) {
-                    if(gameObject instanceof EnemyProjectile){
-                        EnemyProjectile enemyProjectile = (EnemyProjectile) gameObject;
-                        if (enemyProjectile.getStrategy().contains("Fast")) {
-                            fastProjectilesToRemove.add(enemyProjectile);
-                            updateScore(2);
-                        }
-                    }
-                }
-                for (Renderable renderable : model.getRenderables()) {
-                    if(renderable instanceof Projectile){
-                        EnemyProjectile enemyProjectile = (EnemyProjectile) renderable;
-                        if (enemyProjectile.getStrategy().contains("Fast")) {
-                            fastProjectilesRenderablesToRemove.add(enemyProjectile);
-                                // entity dead,find match view and  delete
-                            renderable.takeDamage(100);
-                                if (!renderable.isAlive()){
-                                    for (EntityView entityView : entityViews){
-                                        if (entityView.matchesEntity(renderable)){
-                                            // MARKED  but not  delete instantly, will be deleted at  below
-                                            entityView.markForDelete();
-                                        }
-                                    }
-                                }
-                        }
-                    }
-                }
-
-                model.getGameObjects().removeAll(fastProjectilesToRemove);
-                model.getRenderables().removeAll(fastProjectilesRenderablesToRemove);
-
+                list1=removeSlowProjectile(model,entityViews);
+                model.getGameObjects().removeAll(list1.get(0));
+                model.getRenderables().removeAll(list1.get(1));
                 break;
             case "K":
-                List<Projectile> slowProjectilesToRemove = new ArrayList<>();
-                List<Projectile> slowProjectilesRenderablesToRemove = new ArrayList<>();
-                for (GameObject gameObject : model.getGameObjects()) {
-                    if(gameObject instanceof EnemyProjectile){
-                        EnemyProjectile enemyProjectile = (EnemyProjectile) gameObject;
-                        if (enemyProjectile.getStrategy().contains("Slow")) {
-                            slowProjectilesToRemove.add(enemyProjectile);
-                            updateScore(1);
-                        }
-                    }
-                }
-                for (Renderable renderable : model.getRenderables()) {
-                    if(renderable instanceof Projectile){
-                        EnemyProjectile enemyProjectile = (EnemyProjectile) renderable;
-                        if (enemyProjectile.getStrategy().contains("Slow")) {
-                            slowProjectilesRenderablesToRemove.add(enemyProjectile);
-                            // entity dead,find match view and  delete
-                            renderable.takeDamage(100);
-                            if (!renderable.isAlive()){
-                                for (EntityView entityView : entityViews){
-                                    if (entityView.matchesEntity(renderable)){
-                                        // MARKED  but not  delete instantly, will be deleted at  below
-                                        entityView.markForDelete();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                model.getGameObjects().removeAll(slowProjectilesToRemove);
-                model.getRenderables().removeAll(slowProjectilesRenderablesToRemove);
+                list2=removeFastProjectile(model,entityViews);
+                model.getGameObjects().removeAll(list2.get(0));
+                model.getRenderables().removeAll(list2.get(1));
                 break;
             case "L":
-                List<Enemy> fastEnemyToRemove = new ArrayList<>();
-                List<Enemy> fastEnemyRenderablesToRemove = new ArrayList<>();
-                for (GameObject gameObject : model.getGameObjects()) {
-                    if(gameObject instanceof Enemy){
-                        Enemy enemy = (Enemy) gameObject;
-                        if (enemy.getImage().getUrl().contains("fast")) {
-                            fastEnemyToRemove.add(enemy);
-                            updateScore(4);
-                        }
-                    }
-                }
-                for (Renderable renderable : model.getRenderables()) {
-                    if(renderable instanceof Enemy){
-                        Enemy enemy = (Enemy) renderable;
-                        if (enemy.getEnemyLevel(renderable).equals("strong")) {
-                            fastEnemyRenderablesToRemove.add(enemy);
-                            // entity dead,find match view and  delete
-                            renderable.takeDamage(100);
-                            if (!renderable.isAlive()){
-                                for (EntityView entityView : entityViews){
-                                    if (entityView.matchesEntity(renderable)){
-                                        // MARKED  but not  delete instantly, will be deleted at  below
-                                        entityView.markForDelete();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                model.getGameObjects().removeAll(fastEnemyToRemove);
-                model.getRenderables().removeAll(fastEnemyRenderablesToRemove);
+                list3=removeSlowEnemy(model,entityViews);
+                model.getGameObjects().removeAll(list3.get(0));
+                model.getRenderables().removeAll(list3.get(1));
                 break;
             case "P":
-                List<Enemy> slowEnemyToRemove = new ArrayList<>();
-                List<Enemy> slowEnemyRenderablesToRemove = new ArrayList<>();
-                for (GameObject gameObject : model.getGameObjects()) {
-                    if(gameObject instanceof Enemy){
-                        Enemy enemy = (Enemy) gameObject;
-                        if (enemy.getImage().getUrl().contains("slow")) {
-                            slowEnemyToRemove.add(enemy);
-                            updateScore(3);
-                        }
-                    }
-                }
-                for (Renderable renderable : model.getRenderables()) {
-                    if(renderable instanceof Enemy){
-                        Enemy enemy = (Enemy) renderable;
-                        if (enemy.getEnemyLevel(renderable).equals("weak")) {
-                            slowEnemyRenderablesToRemove.add(enemy);
-                            // entity dead,find match view and  delete
-                            renderable.takeDamage(100);
-                            if (!renderable.isAlive()){
-                                for (EntityView entityView : entityViews){
-                                    if (entityView.matchesEntity(renderable)){
-                                        // MARKED  but not  delete instantly, will be deleted at  below
-                                        entityView.markForDelete();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                model.getGameObjects().removeAll(slowEnemyToRemove);
-                model.getRenderables().removeAll(slowEnemyRenderablesToRemove);
+                list4=removeFastEnemy(model,entityViews);
+                model.getGameObjects().removeAll(list4.get(0));
+                model.getRenderables().removeAll(list4.get(1));
                 break;
         }
-
     }
-
-
-
 
 }

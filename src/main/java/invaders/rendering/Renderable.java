@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * Represents something that can be rendered : enemy  player
  */
-public interface Renderable extends Serializable {
+public interface Renderable  {
 
     public Image getImage();
 

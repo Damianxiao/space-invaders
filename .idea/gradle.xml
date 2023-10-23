@@ -6,7 +6,7 @@
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="E:/gradle-8.4" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../../gradle/gradle-8.4" />
         <option name="gradleJvm" value="17" />
         <option name="modules">
           <set>

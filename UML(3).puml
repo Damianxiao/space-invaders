@@ -1,0 +1,35 @@
+@startuml
+
+!define RECTANGLE class
+
+' 放置类在左上角
+RECTANGLE Class1 {
+  - attribute1: Type
+  + method1(): ReturnType
+}
+
+' 放置类在右上角
+RECTANGLE Class2 {
+  - attribute2: Type
+  + method2(): ReturnType
+}
+
+' 放置类在左下角
+RECTANGLE Class3 {
+  - attribute3: Type
+  + method3(): ReturnType
+}
+
+' 放置类在右下角
+RECTANGLE Class4 {
+  - attribute4: Type
+  + method4(): ReturnType
+}
+
+' 调整类之间的间距，使其适应正方形
+Class1 -[hidden]-> Class2
+Class2 -[hidden]-> Class3
+Class3 -[hidden]-> Class4
+Class4 -[hidden]-> Class1
+
+@enduml

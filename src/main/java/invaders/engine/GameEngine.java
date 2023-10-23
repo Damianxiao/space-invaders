@@ -27,6 +27,10 @@ import org.json.simple.JSONObject;
 import javax.swing.text.Position;
 
 import static invaders.engine.GameWindow.*;
+import static invaders.score.scoreBroad.updateScoreCount;
+import static invaders.util.gameUndo.gameUndoSave;
+
+import invaders.util.gameUndo;
 
 /**
  * This class manages the main loop and logic of the game
@@ -41,7 +45,7 @@ public class GameEngine {
 
 	private List<Renderable> renderables =  new ArrayList<>();
 
-	private Player player;
+	public Player player;
 
 	private boolean left;
 	private boolean right;
@@ -66,7 +70,7 @@ public class GameEngine {
 	//init engine
 	public GameEngine(String config){
 		// Read the config here
-		ConfigReader.parse(config);
+		 ConfigReader.parse(config);
 
 		// Get game width and height
 		gameWidth = ((Long)((JSONObject) ConfigReader.getGameInfo().get("size")).get("x")).intValue();
@@ -241,48 +245,13 @@ public class GameEngine {
 		return player;
 	}
 
-	/**
-	 * @Description :
-	 * calculate point
-	*/
-	public void updateScoreCount(Renderable renderable){
-		if(!renderable.isAlive()&&!renderable.getRenderableObjectName().equals("Bunker")){
 
-			if(renderable.getRenderableObjectName().equals("Enemy") || renderable.getRenderableObjectName().equals("EnemyProjectile")){
-//			for test
-//			if(renderable.getRenderableObjectName().equals("Enemy")){
-				switch (renderable.getRenderableObjectName()){
-					case "EnemyProjectile":
-						if(renderable.getStrategy().contains("Fast")){
-							updateScore(2); break;
-						} else if (renderable.getStrategy().contains("Slow")) {
-							updateScore(1);break;
-						}
-						break;
-					case "Enemy" :
-						if(renderable.getEnemyLevel(renderable).equals("weak")){
-							updateScore(3);break;
-						} else if (renderable.getEnemyLevel(renderable).equals("strong")) {
-							updateScore(4);break;
-						}
-						break;
-				}
-			}
-		}
-	}
 	/**
 	 * @Description :
 	 * save game
 	 */
 	void saveCurrentGame() {
-		int score = Integer.parseInt(scoreCount.getText());
-		int time = Integer.parseInt(timerTime.getText());
-		List<Renderable> renderablesCopy = new ArrayList<>(getRenderables());
-		List<GameObject> gameObjectsCopy = new ArrayList<>(getGameObjects());
-
-		previousGameState = new gameState(score, time, renderablesCopy, gameObjectsCopy);
-		System.out.println(renderables.size()+"======="+gameObjects.size());
-
+		previousGameState = gameUndo.saveGameState(this);
 	}
 
 	/**
@@ -290,23 +259,8 @@ public class GameEngine {
 	 * Undo game
 	 */
 	public void undoGame(){
-		if(previousGameState!=null){
-			final List<Renderable> renderables = previousGameState.getRenderables();
-			for (Renderable renderable : renderables) {
-				if (renderable instanceof Player) {
-					player = (Player) renderable;
-					break;
-				}
-			}
-			setRenderables(new ArrayList<>(renderables));
-			setGameObjects(new ArrayList<>(previousGameState.getGameObjects()));
-			resetStatic(Integer.parseInt(String.valueOf(previousGameState.getTime())));
-			scoreCount.setText(String.valueOf(previousGameState.getScore()));
-			timerTime.setText(String.valueOf(previousGameState.getTime()));
-			updatePane(renderables, previousGameState.getGameObjects());
-			previousGameState=null;
-		}
-
+		gameUndoSave(previousGameState,this);
+		previousGameState=null;
 	}
 
 	/**
@@ -329,6 +283,10 @@ public class GameEngine {
 		showCheatLabel(cheatMode);
 	}
 
+	/**
+	 * @Description :
+	 * trigger cheat
+	*/
 	public void Hacker(String key){
 		if(cheatMode) {
 			cheatModeSelection(key);

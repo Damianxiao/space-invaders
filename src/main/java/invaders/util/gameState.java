@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static invaders.engine.GameWindow.scoreCount;
+import static invaders.engine.GameWindow.timerTime;
+
 /**
  * @Description :
  * gameState in every Frame
@@ -89,4 +92,7 @@ public class gameState implements Serializable {
     public void setGameObjects(List<GameObject> gameObjects) {
         this.gameObjects = gameObjects;
     }
+
+
+
 }
