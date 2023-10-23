@@ -29,4 +29,8 @@ And  enable cheat codes during the game:
 Java - The main programming language.
 JavaFX - Used for the game's graphical user interface.
 
+## Version
+• Gradle 8.4.2
+• JDK 17
+
 enjoy 
