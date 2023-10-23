@@ -19,13 +19,13 @@ import java.io.Serializable;
 
 public class Player implements Moveable, Renderable, Serializable {
 
-    private final Vector2D position;
+    private  Vector2D position;
     private double health;
     private double velocity;
 
     private final double width = 20;
     private final double height = 20;
-    private final Image image;
+    private  Image image;
     private ProjectileFactory playerProjectileFactory = new PlayerProjectileFactory();
 
 
@@ -37,6 +37,10 @@ public class Player implements Moveable, Renderable, Serializable {
         this.playerProjectileFactory = playerProjectileFactory;
     }
 
+    private Player(){
+        
+    }
+    
     public Player(JSONObject playerInfo){
         int x = ((Long)((JSONObject)(playerInfo.get("position"))).get("x")).intValue();
         int y = ((Long)((JSONObject)(playerInfo.get("position"))).get("y")).intValue();
@@ -56,6 +60,17 @@ public class Player implements Moveable, Renderable, Serializable {
     @Override
     public double getHealth() {
         return this.health;
+    }
+
+    @Override
+    public Renderable clones() {
+        Player clone = new Player();
+        clone.position = new Vector2D(position.getX(), position.getY());
+        clone.health = health;
+        clone.velocity = velocity;
+        clone.image = image;
+        clone.playerProjectileFactory = playerProjectileFactory;
+        return clone;
     }
 
     @Override

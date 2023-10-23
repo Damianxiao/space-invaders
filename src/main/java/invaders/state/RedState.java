@@ -15,4 +15,11 @@ public class RedState implements BunkerState {
         // bunker.
 
     }
+
+
+    @Override
+    public BunkerState clone(Bunker b) {
+        RedState clone = new RedState(b);
+        return clone;
+    }
 }

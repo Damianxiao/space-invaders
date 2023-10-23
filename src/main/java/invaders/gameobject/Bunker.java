@@ -17,14 +17,6 @@ public class Bunker implements GameObject, Renderable , Serializable {
     private Image image;
     private BunkerState state = new GreenState(this);
 
-    public Bunker(Vector2D position, double width, double height, int lives, Image image, BunkerState state) {
-        this.position = position;
-        this.width = width;
-        this.height = height;
-        this.lives = lives;
-        this.image = image;
-        this.state = state;
-    }
 
     @Override
     public void start() {}
@@ -76,6 +68,18 @@ public class Bunker implements GameObject, Renderable , Serializable {
 	public boolean isAlive(){
 	    return this.lives > 0;
 	}
+
+    @Override
+    public Renderable clones() {
+        Bunker clone = new Bunker();
+        clone.image = image;
+        clone.lives = lives;
+        clone.position = new Vector2D(position.getX(), position.getY());
+        clone.height = getHeight();
+        clone.width = getWidth();
+        clone.state = state.clone(clone);
+        return clone;
+    }
 
 
     @Override

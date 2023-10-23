@@ -1,6 +1,7 @@
 package invaders.entities;
 
 import invaders.engine.GameEngine;
+import invaders.gameobject.GameObject;
 import invaders.physics.Vector2D;
 import invaders.rendering.Renderable;
 
@@ -76,5 +77,15 @@ public class SpaceBackground implements Renderable, Serializable {
 	@Override
 	public String getEnemyLevel(Renderable renderable) {
 		return null;
+	}
+
+	@Override
+	public int getLives() {
+		return this.getLives();
+	}
+
+	@Override
+	public Renderable clones() {
+		return this;
 	}
 }

@@ -1,6 +1,7 @@
 package invaders.factory;
 
 import invaders.engine.GameEngine;
+import invaders.gameobject.GameObject;
 import invaders.physics.Collider;
 import invaders.physics.Vector2D;
 import invaders.rendering.Renderable;
@@ -39,4 +40,15 @@ public class EnemyProjectile extends Projectile{
         return null;
     }
 
+    @Override
+    public int getLives() {
+        return lives;
+    }
+
+    public GameObject clones() {
+        Vector2D position = new Vector2D(getPosition().getX(), getPosition().getY());
+        EnemyProjectile clone = new EnemyProjectile(position, strategy, getImage());
+        clone.lives = getLives();
+        return clone;
+    }
 }

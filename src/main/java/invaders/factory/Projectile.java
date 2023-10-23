@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 import java.io.Serializable;
 
 public abstract class Projectile implements Renderable, GameObject, Serializable {
-    private int lives = 1;
+    protected int lives = 1;
     private Vector2D position;
     private final Image image;
 
@@ -59,6 +59,10 @@ public abstract class Projectile implements Renderable, GameObject, Serializable
     @Override
     public boolean isAlive() {
         return this.lives>0;
+    }
+
+    public GameObject clone() {
+        return null;
     }
 
 }

@@ -21,6 +21,7 @@ import invaders.rendering.Renderable;
 import invaders.util.gameState;
 import invaders.util.gameUndo;
 import javafx.event.Event;
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.simple.JSONObject;
 
 import javax.swing.text.Position;
@@ -51,21 +52,20 @@ public class GameEngine {
 	 * @Description :
 	 * gameUndo function
 	 */
-	private List<EntityView> entityViews =  new ArrayList<EntityView>();
-	private double xViewportOffset = 0.0;
-	private double yViewportOffset = 0.0;
-
-	private  gameUndo gameUndo;
+	List<Player> playerList = new ArrayList<>();
 
 
-	Stack<gameState> saves = new Stack<>();
+	private static gameState currentGameState;
+	private static gameState previousGameState;
 
-	private  gameState gameState;
-
+	/* *
+	 * @Description
+	 * cheat
+	*/
+	private boolean cheatMode;
 	//init engine
 	public GameEngine(String config){
 		// Read the config here
-		gameUndo = new gameUndo();
 		ConfigReader.parse(config);
 
 		// Get game width and height
@@ -134,10 +134,10 @@ public class GameEngine {
 						 * calculate point
 						 */
 						if(!renderableA.getRenderableObjectName().equals("Bunker")&&!renderableB.getRenderableObjectName().equals("Bunker")){
-//							if(renderableA.getRenderableObjectName().equals("Player") || renderableB.getRenderableObjectName().equals("Player")){
+							if(renderableA.getRenderableObjectName().equals("PlayerProjectile") || renderableB.getRenderableObjectName().equals("PlayerProjectile")){
 								updateScoreCount(renderableA);
 								updateScoreCount(renderableB);
-//							}
+							}
 						}
 					}
 				}
@@ -272,37 +272,17 @@ public class GameEngine {
 	}
 	/**
 	 * @Description :
-	 * save game every seconds
+	 * save game
 	 */
 	void saveCurrentGame() {
-
 		int score = Integer.parseInt(scoreCount.getText());
 		int time = Integer.parseInt(timerTime.getText());
-
-		// some weird problem
-		List<Renderable> renderablesCopy = new ArrayList<>();
-		for(Renderable renderable:getRenderables()){
-			if(renderable.getRenderableObjectName().equals("Player")){
-				Player playerEntity = new Player(renderable.getPosition(),renderable.getHealth(),1,renderable.getImage(),new PlayerProjectileFactory());
-				renderablesCopy.add(playerEntity);
-			} else if (renderable.getRenderableObjectName().equals("Bunker")) {
-				Bunker bunkerEntity = new Bunker(renderable.getPosition(),renderable.getWidth(),renderable.getHeight(),renderable.getLives(),renderable.getImage(),((Bunker)renderable).getState());
-				renderablesCopy.add(bunkerEntity);
-			} else if (renderable.getRenderableObjectName().equals("Enemy")) {
-				Enemy enemyEntity = new Enemy(renderable.getPosition(),renderable.getLives(),renderable.getImage(),-1,renderable.get);
-			}
-		}
+		List<Renderable> renderablesCopy = new ArrayList<>(getRenderables());
 		List<GameObject> gameObjectsCopy = new ArrayList<>(getGameObjects());
-		/* *
-		 * @Description
-		 *  cannot use this way , copy  its own object list but not the reference
-		*/
-//		List<Renderable> renderables = getRenderables();
-//		List<GameObject> gameObjects = getGameObjects();
+
+		previousGameState = new gameState(score, time, renderablesCopy, gameObjectsCopy);
 		System.out.println(renderables.size()+"======="+gameObjects.size());
-		gameState gs = new gameState(score, time, renderablesCopy, gameObjectsCopy);
-		saves.push(gs);
-		gameUndo.setSaves(saves);
+
 	}
 
 	/**
@@ -310,23 +290,23 @@ public class GameEngine {
 	 * Undo game
 	 */
 	public void undoGame(){
-		gameState gs = gameUndo.Undo();
-		if(gs!=null){
-
-		// Create new lists for renderables and gameObjects
-		List<Renderable> renderableList = new ArrayList<>(gs.getRenderables());
-		List<GameObject> gameObjectsList = new ArrayList<>(gs.getGameObjects());
-		// Set the new lists as the current game state
-		setRenderables(renderableList);
-		setGameObjects(gameObjectsList);
-		// Reset other game state variables
-		resetStatic(Integer.parseInt(String.valueOf(gs.getTime())));
-		scoreCount.setText(String.valueOf(gs.getScore()));
-		timerTime.setText(String.valueOf(gs.getTime()));
-		updatePane(renderableList);
-		// Update EntityView location
-//		updateEntity(renderableList, gameObjects);
+		if(previousGameState!=null){
+			final List<Renderable> renderables = previousGameState.getRenderables();
+			for (Renderable renderable : renderables) {
+				if (renderable instanceof Player) {
+					player = (Player) renderable;
+					break;
+				}
+			}
+			setRenderables(new ArrayList<>(renderables));
+			setGameObjects(new ArrayList<>(previousGameState.getGameObjects()));
+			resetStatic(Integer.parseInt(String.valueOf(previousGameState.getTime())));
+			scoreCount.setText(String.valueOf(previousGameState.getScore()));
+			timerTime.setText(String.valueOf(previousGameState.getTime()));
+			updatePane(renderables, previousGameState.getGameObjects());
+			previousGameState=null;
 		}
+
 	}
 
 	/**
@@ -342,8 +322,16 @@ public class GameEngine {
 
 	/* *
 	 * @Description
-	 *  deepCopy
+	 * hackerOn
 	*/
+	public void hackerOn(){
+		cheatMode = !cheatMode;
+		showCheatLabel(cheatMode);
+	}
 
-
+	public void Hacker(String key){
+		if(cheatMode) {
+			cheatModeSelection(key);
+		}
+	}
 }

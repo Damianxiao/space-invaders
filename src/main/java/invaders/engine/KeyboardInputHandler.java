@@ -48,10 +48,38 @@ class KeyboardInputHandler {
 
         /**
          * @Description :
-         * press BackSpace key to undo
+         * press BackSpace key to undo , press  S to Save  a GameState
          */
+        if(keyEvent.getCode().equals(KeyCode.S)){
+            model.saveCurrentGame();
+        }
         if (keyEvent.getCode().equals(KeyCode.BACK_SPACE)) {
             model.undoGame();
+        }
+
+        /* *
+         * @Description
+         * hacker press H
+        */
+        if(keyEvent.getCode().equals(KeyCode.H)){
+            model.hackerOn();
+        }
+
+        /* *
+         * @Description
+         * hacker mode
+        */
+        if(keyEvent.getCode().equals(KeyCode.J)){
+            model.Hacker(KeyCode.J.getName());
+        }
+        if(keyEvent.getCode().equals(KeyCode.K)){
+            model.Hacker(KeyCode.K.getName());
+        }
+        if(keyEvent.getCode().equals(KeyCode.L)){
+            model.Hacker(KeyCode.L.getName());
+        }
+        if(keyEvent.getCode().equals(KeyCode.P)){
+            model.Hacker(KeyCode.P.getName());
         }
 
 

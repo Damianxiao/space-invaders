@@ -1,5 +1,6 @@
 package invaders.rendering;
 
+import invaders.gameobject.GameObject;
 import invaders.physics.Collider;
 import invaders.physics.Vector2D;
 import javafx.scene.image.Image;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 /**
  * Represents something that can be rendered : enemy  player
  */
-public interface Renderable extends Serializable  {
+public interface Renderable extends Serializable {
 
     public Image getImage();
 
@@ -24,6 +25,8 @@ public interface Renderable extends Serializable  {
     public void takeDamage(double amount);
 
     public double getHealth();
+
+    public Object clones();
 
     /**
      * The set of available layers
@@ -67,6 +70,7 @@ public interface Renderable extends Serializable  {
      * give emeny a level
     */
     public String getEnemyLevel(Renderable renderable);
+
 
     /* *
      * @Description

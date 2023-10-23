@@ -11,6 +11,8 @@ public interface GameObject extends Serializable {
     public void update(GameEngine model);
 
     public boolean isAlive();
+    
+    public Object clones();
 
 
 }

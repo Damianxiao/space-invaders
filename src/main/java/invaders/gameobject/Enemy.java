@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static com.sun.javafx.event.EventUtil.fireEvent;
@@ -83,7 +84,7 @@ public class Enemy implements GameObject, Renderable, Serializable {
              *  if projectile  hited , delete
              */
             for(Projectile p : enemyProjectile){
-                if(!p.isAlive()){
+                if(p != null && !p.isAlive()){
                     engine.getPendingToRemoveGameObject().add(p);
                     engine.getPendingToRemoveRenderable().add(p);
                     pendingToDeleteEnemyProjectile.add(p);
@@ -201,6 +202,8 @@ public class Enemy implements GameObject, Renderable, Serializable {
         return null;
     }
 
+
+
     @Override
     public int getLives() {
         return this.lives;
@@ -209,4 +212,30 @@ public class Enemy implements GameObject, Renderable, Serializable {
         return this.xVel;
     }
 
+    @Override
+    public GameObject clones(){
+        Enemy clone = new Enemy(new Vector2D(position.getX(), position.getY()));
+        clone.lives = lives;
+        clone.xVel = xVel;
+        clone.projectileStrategy = projectileStrategy;
+        clone.random = random;
+        clone.image = image;
+        clone.projectileFactory = projectileFactory;
+        clone.projectileImage = projectileImage;
+        ArrayList<Projectile> cps = new ArrayList<>();
+        for (Projectile projectile : pendingToDeleteEnemyProjectile) {
+            Projectile cp = (Projectile) projectile.clone();
+            cps.add(cp);
+        }
+        clone.pendingToDeleteEnemyProjectile = cps;
+        ArrayList<Projectile> cps1 = new ArrayList<>();
+        for (Projectile projectile : enemyProjectile) {
+            if (projectile != null) {
+                Projectile cp1 = (Projectile) projectile.clone();
+                cps1.add(cp1);
+            }
+        }
+        clone.enemyProjectile = cps1;
+        return clone;
+    }
 }
