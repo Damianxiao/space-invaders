@@ -101,7 +101,7 @@ public class Cheat {
             }
         }
         for (Renderable renderable : model.getRenderables()) {
-            if(renderable instanceof Projectile){
+            if(renderable instanceof EnemyProjectile){
                 EnemyProjectile enemyProjectile = (EnemyProjectile) renderable;
                 if (enemyProjectile.getStrategy().contains("Fast")) {
                     fastProjectilesRenderablesToRemove.add(enemyProjectile);
@@ -137,7 +137,7 @@ public class Cheat {
             }
         }
         for (Renderable renderable : model.getRenderables()) {
-            if(renderable instanceof Projectile){
+            if(renderable instanceof EnemyProjectile){
                 EnemyProjectile enemyProjectile = (EnemyProjectile) renderable;
                 if (enemyProjectile.getStrategy().contains("Slow")) {
                     slowProjectilesRenderablesToRemove.add(enemyProjectile);
